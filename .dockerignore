@@ -1,0 +1,10 @@
+.git
+.venv
+venv
+__pycache__
+.pytest_cache
+.env
+data/bookmind.db
+data/index
+eval/results
+tests
