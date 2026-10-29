@@ -14,7 +14,8 @@ st.set_page_config(page_title="BookMind", page_icon=":books:", layout="wide")
 @st.cache_resource(show_spinner="Model ve indeks yukleniyor...")
 def get_services():
     # Agent'in sohbet gecmisi bellekte tutuldugu icin servisler tum oturumlarda paylasilir
-    return create_services(with_agent=True)
+    # Veritabani/indeks yoksa (ornegin Streamlit Cloud'da ilk acilista) katalogdan olusturulur
+    return create_services(with_agent=True, build_if_missing=True)
 
 
 def book_card(book: dict, score: float | None = None) -> None:
