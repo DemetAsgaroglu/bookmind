@@ -36,13 +36,13 @@ def get_settings() -> Settings:
             "EMBEDDING_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         ),
         llm_provider=os.getenv("LLM_PROVIDER", "gemini").lower(),
-        gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.6-flash"),
         ollama_model=os.getenv("OLLAMA_MODEL", "qwen2.5:7b"),
         ollama_base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
         google_api_key=os.getenv("GOOGLE_API_KEY") or None,
         gemini_fallback_models=[
             m.strip()
-            for m in os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-3.1-flash-lite").split(",")
+            for m in os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.1-flash-lite,gemini-3.8-flash").split(",")
             if m.strip()
         ],
         gemini_max_attempts=int(os.getenv("GEMINI_MAX_ATTEMPTS", "2")),
