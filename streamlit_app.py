@@ -3,7 +3,9 @@
 Calistirma: streamlit run streamlit_app.py
 """
 
+import hashlib
 import uuid
+from pathlib import Path
 
 import streamlit as st
 
@@ -13,8 +15,18 @@ from bookmind.services import create_services
 st.set_page_config(page_title="BookMind", page_icon=":books:", layout="wide")
 
 
-@st.cache_resource(show_spinner="Model ve indeks yukleniyor...")
-def get_services():
+def code_version() -> str:
+    # Streamlit Cloud kod guncellemesinde sureci yeniden baslatmaz; cache_resource eski kodla
+    # kurulan servisleri tutmaya devam eder. bookmind/ degisince anahtar degisir, servisler yeniden kurulur.
+    package = Path(__file__).parent / "bookmind"
+    digest = hashlib.md5()
+    for path in sorted(package.glob("*.py")):
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+@st.cache_resource(show_spinner="Model ve indeks yukleniyor...", max_entries=1)
+def get_services(version: str):
     # Agent'in sohbet gecmisi bellekte tutuldugu icin servisler tum oturumlarda paylasilir
     # Veritabani/indeks yoksa (ornegin Streamlit Cloud'da ilk acilista) katalogdan olusturulur
     return create_services(with_agent=True, build_if_missing=True)
@@ -35,7 +47,7 @@ def book_card(book: dict, score: float | None = None) -> None:
 
 
 try:
-    services = get_services()
+    services = get_services(code_version())
 except Exception as exc:  # noqa: BLE001 - kurulum eksikse sayfa bos kalmasin
     st.error(f"Servisler baslatilamadi: {exc}")
     st.stop()
@@ -47,6 +59,8 @@ with st.sidebar:
     guest_id = st.session_state.setdefault("guest_id", f"misafir-{uuid.uuid4().hex[:6]}")
     user_id = st.text_input("Kullanici", value=guest_id).strip() or guest_id
     debug = st.toggle("Arac cagrilarini goster", value=False)
+    models = [getattr(llm, "model", "?").split("/")[-1] for llm in services.agent.llms]
+    st.caption("Model sirasi: " + " → ".join(models))
     if st.button("Sohbeti sifirla"):
         services.agent.reset(user_id)
         st.session_state.pop(f"history_{user_id}", None)
