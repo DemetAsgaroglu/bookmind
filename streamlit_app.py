@@ -3,6 +3,8 @@
 Calistirma: streamlit run streamlit_app.py
 """
 
+import uuid
+
 import streamlit as st
 
 from bookmind.database import LIBRARY_STATUSES
@@ -40,7 +42,10 @@ except Exception as exc:  # noqa: BLE001 - kurulum eksikse sayfa bos kalmasin
 
 with st.sidebar:
     st.title("BookMind")
-    user_id = st.text_input("Kullanici", value="demet").strip() or "demo"
+    # Herkese acik demoda ziyaretciler birbirinin sohbetini ve kutuphanesini gormesin diye
+    # her tarayici oturumu kendi misafir kimligiyle baslar
+    guest_id = st.session_state.setdefault("guest_id", f"misafir-{uuid.uuid4().hex[:6]}")
+    user_id = st.text_input("Kullanici", value=guest_id).strip() or guest_id
     debug = st.toggle("Arac cagrilarini goster", value=False)
     if st.button("Sohbeti sifirla"):
         services.agent.reset(user_id)
