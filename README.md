@@ -2,6 +2,8 @@
 
 Bu proje, kullanıcının okuduğu kitaplara ve sorusuna göre Türkçe kitap önerisi yapan bir sohbet asistanıdır. Asistan, Gemini (veya Ollama ile yerel bir model) kullanarak soruyu anlar ve cevabı sadece katalogdaki kitaplardan üretir.
 
+**Canlı demo:** https://bookmind-k9ge2eh5sakoshkgjnojup.streamlit.app/
+
 Örnek sorular:
 - "Okuduğum kitaplara benzer bir roman öner"
 - "150 TL altındaki polisiyeler neler?"
